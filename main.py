@@ -102,6 +102,27 @@ def find_conflicts(current_course, current_dis, discipline_map):
     return conflict_string
 
 
+def double_degree(discipline_map, major1, major2, max_courses_per_year):
+    major1_field = major1[0]
+    major1_name = major1[1]
+
+    major2_field = major2[0]
+    major2_name = major2[1]
+
+    focus_major = discipline_map[major1_field][major1_name]
+    second_major = discipline_map[major2_field][major2_name]
+
+    for alt_year in second_major.year_list:
+        for term, course_list in alt_year.term_map.items():
+            for course in course_list:
+                for year in focus_major.year_list:
+                    for term, courses in year.term_map.items():
+                        if len(courses) >= max_courses_per_year: continue
+                        print("Appened", course, "to", major1_name)
+                        courses.append(course)
+
+
+
 def export_to_csv(discipline_map, max_courses_per_year):
     """ Exports the saved data from the UCalgary website into a comma separated
     value file. This file can then be accessible through a program such as
@@ -163,12 +184,15 @@ def main():
 
     course_counter = 0
 
+    # In a finished product, these will be user inputs
     discipline_exts = {"ENGG" : "en-4-1.html",
         "ELEC" : "en-4-4.html",
         "SE" : "en-4-9.html", 
         "COMP_SCI" : "sc-4-3-1.html"}
 
     max_courses_per_year = 5
+    major2 = ("COMP_SCI", "Recommended Program Sequence BSc (Majors and Honours)")
+    major1 = ("ELEC", "Electrical Engineering, Regular Program")
 
     if "--test" in sys.argv:
         discipline_exts = {"COMP_SCI" : "sc-4-3-1.html"}
@@ -206,6 +230,7 @@ def main():
     #            get_course_info(course, MAIN_LINK)
     #            course_counter += 1
 
+    double_degree(discipline_map, major1, major2, max_courses_per_year)
     export_to_csv(discipline_map, max_courses_per_year)
     end_time = time.time()
 

@@ -3,9 +3,11 @@
 
 class Major:
     course_reqs = []
+    year_list = []
 
     def __init__(self):
         self.course_reqs = []
+        self.year_list = []
 
 
     def append_course(self, course):

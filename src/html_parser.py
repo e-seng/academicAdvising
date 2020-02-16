@@ -46,6 +46,7 @@ class HomepageParser(HTMLParser):
 
         if tag == "tbody": self.in_table = True
         if tag == "strong": self.new_year = True
+        if tag == "td": self.data_index += 1
 
         if tag not in course_tags or not self.in_table: return
 
@@ -63,9 +64,11 @@ class HomepageParser(HTMLParser):
         """
         has_words = data.split()
 
-        if self.new_year and has_words:
+        if self.new_year and "Year" in has_words:
             self.path_map[self.current_title].year_list.append(Year())
+            self.year_index += 1
             print(data)
+        else: self.new_year = False
 
         if self.is_major and has_words:
             self.current_title = data
@@ -77,6 +80,8 @@ class HomepageParser(HTMLParser):
         """ At the very end of every link, save the link in the corresponding
         major.
         """
+        TERM_LIST = ["fall", "winter"]
+
         if tag == "tbody": 
             self.in_table = False
             self.current_link = ""
@@ -95,6 +100,9 @@ class HomepageParser(HTMLParser):
 
         new_course = Course(self.current_link)
         self.path_map[self.current_title].append_course(new_course)
+
+        term = TERM_LIST[self.data_index - 1]
+        self.path_map[self.current_title].set_term_course(new_course, term, self.year_index)
         #pass
 
 

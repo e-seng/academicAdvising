@@ -39,7 +39,7 @@ def get_req_data(link):
         req_list = major.course_reqs
         year_list = major.year_list
 
-        if req_list: continue
+        if req_list or year_list: continue
 
         pop_list.append(key)
 
@@ -179,14 +179,14 @@ def main():
             print(name, link)
             discipline_map[name] = get_req_data(link)
 
-        test_course = discipline_map["COMP_SCI"]['Required Courses - BSc Major Program'].course_reqs[1]
-        get_course_info(test_course, MAIN_LINK)
+        #test_course = discipline_map["COMP_SCI"]['Required Courses - BSc Major Program'].course_reqs[1]
+        #get_course_info(test_course, MAIN_LINK)
 
-        print("Course Name:", test_course.title)
-        print("Course Key:", test_course.key)
-        print("Prereq:", test_course.prereq)
-        print("Coreq:", test_course.coreq)
-        print("Antireq:", test_course.antireq)
+        #print("Course Name:", test_course.title)
+        #print("Course Key:", test_course.key)
+        #print("Prereq:", test_course.prereq)
+        #print("Coreq:", test_course.coreq)
+        #print("Antireq:", test_course.antireq)
         return discipline_map
 
     start_time = time.time()

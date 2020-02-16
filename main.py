@@ -192,18 +192,18 @@ def main():
     start_time = time.time()
     course_counter = 0
 
-    for name, ext in discipline_exts.items():
-        path_map = {}
-        link = MAIN_LINK.format(ext)
-        path_map = get_req_data(link)
-        discipline_map[name] = path_map
+    #for name, ext in discipline_exts.items():
+    #    path_map = {}
+    #    link = MAIN_LINK.format(ext)
+    #    path_map = get_req_data(link)
+    #    discipline_map[name] = path_map
 
-    for name, path_map in discipline_map.items(): # ha this nesting
-        for path, major in path_map.items():
-            print("Switching to", name, path)
-            for course in major.course_reqs: 
-                get_course_info(course, MAIN_LINK)
-                course_counter += 1
+    #for name, path_map in discipline_map.items(): # ha this nesting
+    #    for path, major in path_map.items():
+    #        print("Switching to", name, path)
+    #        for course in major.course_reqs: 
+    #            get_course_info(course, MAIN_LINK)
+    #            course_counter += 1
 
     #export_to_csv(discipline_map)
     end_time = time.time()

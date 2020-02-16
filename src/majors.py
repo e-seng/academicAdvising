@@ -27,9 +27,7 @@ class Major:
 
 
     def set_term_course(self, course, term, year):
-        print("appended", course, "into", term, year)
+        print("Appended", course, "into", term, year)
 
         if year < 1: return
-
-        print(year, self.year_list)
         self.year_list[year - 1].append_course(course, term)

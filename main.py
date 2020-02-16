@@ -6,6 +6,7 @@ import csv
 import sys
 import time
 
+from src.year import Year
 from src.html_parser import HomepageParser
 
 def get_req_data(link):
@@ -60,18 +61,26 @@ def double_degree(discipline_map, major1, major2, max_courses_per_year):
     focus_major = discipline_map[major1_field][major1_name]
     second_major = discipline_map[major2_field][major2_name]
 
+    year_num = 0
+
     for alt_year in second_major.year_list:
         for term, course_list in alt_year.term_map.items():
-            for course in course_list:
-                for year in focus_major.year_list:
+            for index, course in enumerate(course_list):
+
+                year_num += 1
+
+                for index, year in enumerate(focus_major.year_list):
                     for term, courses in year.term_map.items():
                         if len(courses) >= max_courses_per_year: continue
                         print("Appened", course, "to", major1_name)
                         courses.append(course)
+                        break
+
+                #if year_num > len(focus_major.year_list):
+                #    focus_major.year_list.append(Year)
 
 
-
-def export_to_csv(discipline_map, max_courses_per_year):
+def export_to_csv(discipline_map, max_courses_per_year, focus_major=None):
     """ Exports the saved data from the UCalgary website into a comma separated
     value file. This file can then be accessible through a program such as
     Microsoft Excel.
@@ -103,6 +112,7 @@ def export_to_csv(discipline_map, max_courses_per_year):
         for field, major_map in discipline_map.items():
             csv_writer.writerow({"Field:" : field})
             for major_name, major in major_map.items():
+                if focus_major and focus_major[1] != major_name: continue
                 csv_writer.writerow({"Major:" : major_name})
                 for index, year in enumerate(major.year_list):
                     csv_writer.writerow({"Year:" : index + 1})
@@ -139,8 +149,8 @@ def main():
         "COMP_SCI" : "sc-4-3-1.html"}
 
     max_courses_per_year = 5
-    major2 = ("COMP_SCI", "Recommended Program Sequence BSc (Majors and Honours)")
-    major1 = ("ELEC", "Electrical Engineering, Regular Program")
+    major1 = ("COMP_SCI", "Recommended Program Sequence BSc (Majors and Honours)")
+    major2 = ("ELEC", "Electrical Engineering, Regular Program")
 
     if "--test" in sys.argv:
         discipline_exts = {"COMP_SCI" : "sc-4-3-1.html"}
@@ -179,7 +189,7 @@ def main():
     #            course_counter += 1
 
     double_degree(discipline_map, major1, major2, max_courses_per_year)
-    export_to_csv(discipline_map, max_courses_per_year)
+    export_to_csv(discipline_map, max_courses_per_year, focus_major=major1)
     end_time = time.time()
 
     sec_elapsed = end_time - start_time

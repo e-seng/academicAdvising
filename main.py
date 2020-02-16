@@ -6,7 +6,7 @@ import csv
 import sys
 import time
 
-from src.html_parser import HomepageParser, CourseParser
+from src.html_parser import HomepageParser
 
 def get_req_data(link):
     """ Gets the data from the homepage of a particular major found at the
@@ -48,58 +48,6 @@ def get_req_data(link):
         path_map.pop(key)
 
     return path_map
-
-
-def get_course_info(course, MAIN_LINK):
-    """ Gets the remaining information of the course from the course's link
-    attribute
-
-    PARAMETERS
-    ----------
-        course : Course Object
-            The course which information will be filled
-    """
-    course_parser = CourseParser(course)
-    link_ext = course.link
-
-    link = MAIN_LINK.format(link_ext)
-
-    print("Connecting to link...")
-    resp = requests.get(link)
-    content = resp.content.decode("utf-8")
-
-    course_parser.feed(content)
-    course_parser.close()
-    resp.close()
-
-
-def find_conflicts(current_course, current_dis, discipline_map):
-    """ Finds if any antirequisites conflict with other courses.
-
-    Parameters:
-        course : Course object
-            the current course which that is being analyzed to see if there
-            is any conflict with other courses
-        discipline_map : Dict
-            all of the other disciplines listed here
-    """
-    conflicts = []
-    conflict_string = ""
-
-    for name, path_map in discipline_map.items():
-        if current_dis == name: continue
-        for path, major in path_map.items():
-            if current_course in major.course_reqs: continue
-            for course in major.course_reqs:
-                if course.key not in current_course.antireq: continue
-                if name in conflicts: continue
-                print("Found conflict with", name)
-                conflicts.append(path + " : " + course.title)
-
-    for course in conflicts:
-        conflict_string += (course + " -- ")
-
-    return conflict_string
 
 
 def double_degree(discipline_map, major1, major2, max_courses_per_year):

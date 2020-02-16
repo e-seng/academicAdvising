@@ -3,6 +3,7 @@
 from html.parser import HTMLParser
 from src.majors import Major
 from src.course import Course
+from src.year import Year
 
 class HomepageParser(HTMLParser):
 
@@ -12,12 +13,21 @@ class HomepageParser(HTMLParser):
     is_major = False
     current_title = ""
 
+    new_year = False
+    in_table = False
+
+    data_index = 0
+    year_index = 0
+
     def __init__(self):
         self.reset()
         self.strict = True
         self.convert_charrefs = True
         self.is_major = False
+        self.new_year = False
 
+        self.data_index = 0
+        self.year_index = 0
         self.path_map = {}
 
 
@@ -27,14 +37,17 @@ class HomepageParser(HTMLParser):
         unless it is otherwise not relevant
         """
         course_tags = ["a"]
-        title_tags = ["span", "strong"]
+        title_tags = ["span"]
 
-        if tag == "span":
+        if tag == "span" and attrs:
             self.is_major = True
         else:
             self.is_major = False
 
-        if tag not in course_tags: return
+        if tag == "tbody": self.in_table = True
+        if tag == "strong": self.new_year = True
+
+        if tag not in course_tags or not self.in_table: return
 
         for attr in attrs:
             if attr[0] != "href": continue
@@ -49,7 +62,10 @@ class HomepageParser(HTMLParser):
         courses relatively easily
         """
         has_words = data.split()
-        if "Concentration" in has_words: self.is_major = True
+
+        if self.new_year and has_words:
+            self.path_map[self.current_title].year_list.append(Year())
+            print(data)
 
         if self.is_major and has_words:
             self.current_title = data
@@ -61,11 +77,20 @@ class HomepageParser(HTMLParser):
         """ At the very end of every link, save the link in the corresponding
         major.
         """
+        if tag == "tbody": 
+            self.in_table = False
+            self.current_link = ""
+
+        if tag == "strong": self.new_year = False
+
         acceptable_tags = ["a"]
         link_has_words = self.current_link.split()
         title_has_words = self.current_title.split()
 
+        if tag == "tr": self.data_index = 0
+
         if not link_has_words or not title_has_words: return
+
         if tag not in acceptable_tags: return
 
         new_course = Course(self.current_link)

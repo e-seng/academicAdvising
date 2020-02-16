@@ -37,6 +37,7 @@ def get_req_data(link):
 
     for key, major in path_map.items():
         req_list = major.course_reqs
+        year_list = major.year_list
 
         if req_list: continue
 
@@ -169,6 +170,8 @@ def main():
         "COMP_SCI" : "sc-4-3-1.html"}
 
     if "--test" in sys.argv:
+        discipline_exts = {"COMP_SCI" : "sc-4-3-1.html"}
+
         counter = 0
         for name, ext in discipline_exts.items():
             counter += 1

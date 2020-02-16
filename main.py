@@ -205,7 +205,7 @@ def main():
                 get_course_info(course, MAIN_LINK)
                 course_counter += 1
 
-    export_to_csv(discipline_map)
+    #export_to_csv(discipline_map)
     end_time = time.time()
 
     sec_elapsed = end_time - start_time
@@ -215,6 +215,9 @@ def main():
 
     time_elapsed = (str(minutes) + ":" + str(seconds))
     print("Finished parsing", course_counter, "courses in", time_elapsed)
+
+    return discipline_map
+
 
 if __name__ == "__main__":
     main()

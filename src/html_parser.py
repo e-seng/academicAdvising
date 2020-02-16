@@ -12,6 +12,7 @@ class HomepageParser(HTMLParser):
     current_link = ""
     is_major = False
     current_title = ""
+    current_class = ""
 
     new_year = False
     in_table = False
@@ -23,6 +24,7 @@ class HomepageParser(HTMLParser):
         self.reset()
         self.strict = True
         self.convert_charrefs = True
+
         self.is_major = False
         self.new_year = False
 
@@ -70,16 +72,22 @@ class HomepageParser(HTMLParser):
             print(data)
         else: self.new_year = False
 
+        if self.current_link and has_words: self.current_class = data
+
         if self.is_major and has_words:
             self.current_title = data
             self.path_map[self.current_title] = Major()
             print("Found title -", self.current_title)
+            self.year_index = 0
+            self.data_index = 0
 
 
     def handle_endtag(self, tag):
         """ At the very end of every link, save the link in the corresponding
         major.
         """
+        if not self.in_table and self.year_index < 1: return
+
         TERM_LIST = ["fall", "winter"]
 
         if tag == "tbody": 
@@ -99,11 +107,11 @@ class HomepageParser(HTMLParser):
         if tag not in acceptable_tags: return
 
         new_course = Course(self.current_link)
-        self.path_map[self.current_title].append_course(new_course)
+        #self.path_map[self.current_title].append_course(new_course)
 
         term = TERM_LIST[self.data_index - 1]
-        self.path_map[self.current_title].set_term_course(new_course, term, self.year_index)
-        #pass
+        #self.path_map[self.current_title].set_term_course(new_course, term, self.year_index)
+        self.path_map[self.current_title].set_term_course(self.current_class, term, self.year_index)
 
 
     def get_path_map(self):

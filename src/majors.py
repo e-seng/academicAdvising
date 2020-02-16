@@ -24,3 +24,8 @@ class Major:
 
         print("Saved -", course.link)
         self.course_reqs.append(course)
+
+
+    def set_term_course(self, course, term, year):
+        print("appended", course, "into", term, year)
+        self.year_list[year - 1].append_course(course, term)

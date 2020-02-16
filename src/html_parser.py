@@ -9,14 +9,14 @@ class HomepageParser(HTMLParser):
     path_map = {}
 
     current_link = ""
-    is_title = False
+    is_major = False
     current_title = ""
 
     def __init__(self):
         self.reset()
         self.strict = True
         self.convert_charrefs = True
-        is_title = False
+        self.is_major = False
 
         self.path_map = {}
 
@@ -27,17 +27,16 @@ class HomepageParser(HTMLParser):
         unless it is otherwise not relevant
         """
         course_tags = ["a"]
-        title_tags = ["span"]
+        title_tags = ["span", "strong"]
 
-        if tag in title_tags:
-            self.is_title = True
+        if tag == "span":
+            self.is_major = True
         else:
-            self.is_title = False
+            self.is_major = False
 
         if tag not in course_tags: return
 
         for attr in attrs:
-
             if attr[0] != "href": continue
             if "#" not in attr[1]: continue
 
@@ -50,9 +49,9 @@ class HomepageParser(HTMLParser):
         courses relatively easily
         """
         has_words = data.split()
-        if "Concentration" in has_words: self.is_title = True
+        if "Concentration" in has_words: self.is_major = True
 
-        if self.is_title and has_words:
+        if self.is_major and has_words:
             self.current_title = data
             self.path_map[self.current_title] = Major()
             print("Found title -", self.current_title)

@@ -163,7 +163,8 @@ def main():
     MAIN_LINK = "https://www.ucalgary.ca/pubs/calendar/current/{}"
     discipline_map = {}
 
-    discipline_exts = {"ELEC" : "en-4-4.html",
+    discipline_exts = {"ENGG" : "en-4-1.html",
+        "ELEC" : "en-4-4.html",
         "SE" : "en-4-9.html", 
         "COMP_SCI" : "sc-4-3-1.html"}
 

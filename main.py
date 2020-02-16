@@ -164,6 +164,8 @@ def main():
     MAIN_LINK = "https://www.ucalgary.ca/pubs/calendar/current/{}"
     discipline_map = {}
 
+    course_counter = 0  
+
     discipline_exts = {"ENGG" : "en-4-1.html",
         "ELEC" : "en-4-4.html",
         "SE" : "en-4-9.html", 
@@ -190,13 +192,13 @@ def main():
         return discipline_map
 
     start_time = time.time()
-    course_counter = 0
 
-    #for name, ext in discipline_exts.items():
-    #    path_map = {}
-    #    link = MAIN_LINK.format(ext)
-    #    path_map = get_req_data(link)
-    #    discipline_map[name] = path_map
+    for name, ext in discipline_exts.items():
+        path_map = {}
+        link = MAIN_LINK.format(ext)
+        path_map = get_req_data(link)
+        discipline_map[name] = path_map
+        course_counter += 1
 
     #for name, path_map in discipline_map.items(): # ha this nesting
     #    for path, major in path_map.items():
@@ -214,7 +216,7 @@ def main():
     seconds = sec_elapsed - minutes * 60
 
     time_elapsed = (str(minutes) + ":" + str(seconds))
-    print("Finished parsing", course_counter, "courses in", time_elapsed)
+    print("Finished parsing", course_counter, "fields in", time_elapsed)
 
     return discipline_map
 

@@ -102,7 +102,7 @@ def find_conflicts(current_course, current_dis, discipline_map):
     return conflict_string
 
 
-def export_to_csv(discipline_map):
+def export_to_csv(discipline_map, max_courses_per_year):
     """ Exports the saved data from the UCalgary website into a comma separated
     value file. This file can then be accessible through a program such as
     Microsoft Excel.
@@ -122,33 +122,30 @@ def export_to_csv(discipline_map):
     if file_exists: os.remove("./out.csv")
 
     with open("./out.csv", "+w", newline="") as csv_file:
-        fieldnames = ["Discipline:",
-            "Path:",
-            "Course Name:",
-            "Course Key:", 
-            "Prerequisites:", 
-            "Corequisites:", 
-            "Antirequisites:",
-            "Conflicts With:"]
+        fieldnames = ["Field:",
+            "Major:",
+            "Year:",
+            "Term:",
+            "Courses:"
+            ]
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
 
-        for discipline, path_map in discipline_map.items():
-            for path, major in path_map.items():
-                for course in major.course_reqs:
-                    print("Writing", course.title)
-                    conflicts = find_conflicts(course, discipline,discipline_map)
-
-                    csv_writer.writerow(
-                        {"Discipline:" : discipline,
-                        "Path:" : path,
-                        "Course Name:" : course.title,
-                        "Course Key:" : course.key,
-                        "Prerequisites:" : course.prereq,
-                        "Corequisites:" : course.coreq,
-                        "Antirequisites:" : course.antireq,
-                        "Conflicts With:" : conflicts
-                        })
+        for field, major_map in discipline_map.items():
+            csv_writer.writerow({"Field:" : field})
+            for major_name, major in major_map.items():
+                csv_writer.writerow({"Major:" : major_name})
+                for index, year in enumerate(major.year_list):
+                    csv_writer.writerow({"Year:" : index + 1})
+                    for term, course_list in year.term_map.items():
+                        csv_writer.writerow({"Term:" : term})
+                        for course in range(max_courses_per_year):
+                            
+                            if course >= len(course_list):
+                                course_name = "Open for Options"
+                            else:
+                                course_name = course_list[course]
+                            csv_writer.writerow({"Courses:" : course_name})
 
 
 def main():
@@ -164,12 +161,14 @@ def main():
     MAIN_LINK = "https://www.ucalgary.ca/pubs/calendar/current/{}"
     discipline_map = {}
 
-    course_counter = 0  
+    course_counter = 0
 
     discipline_exts = {"ENGG" : "en-4-1.html",
         "ELEC" : "en-4-4.html",
         "SE" : "en-4-9.html", 
         "COMP_SCI" : "sc-4-3-1.html"}
+
+    max_courses_per_year = 5
 
     if "--test" in sys.argv:
         discipline_exts = {"COMP_SCI" : "sc-4-3-1.html"}
@@ -207,7 +206,7 @@ def main():
     #            get_course_info(course, MAIN_LINK)
     #            course_counter += 1
 
-    #export_to_csv(discipline_map)
+    export_to_csv(discipline_map, max_courses_per_year)
     end_time = time.time()
 
     sec_elapsed = end_time - start_time
